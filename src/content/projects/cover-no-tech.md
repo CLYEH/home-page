@@ -5,6 +5,7 @@ tech: []
 links:
   - { label: View, href: 'https://example.com/pico' }
 cover: /placeholder-cover.svg
+featured: true
 order: 4
 ---
 

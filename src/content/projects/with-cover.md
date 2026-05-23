@@ -6,6 +6,7 @@ links:
   - { label: View, href: 'https://example.com/aurora' }
   - { label: Source, href: 'https://github.com/example/aurora' }
 cover: /placeholder-cover.svg
+featured: true
 order: 2
 ---
 

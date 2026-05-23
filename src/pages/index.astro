@@ -1,12 +1,139 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { getCollection } from 'astro:content';
+
+// 精選專案：取 featured 為真者，依 order 升冪排序（內容層約定，見 homepage.md 1.4）。
+const featured = (await getCollection('projects'))
+  .filter((p) => p.data.featured)
+  .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
+
+// 聯絡管道（email 第一順位）。外部連結用 rel="me noopener"。
+const contactLinks = [
+  { label: 'Email', href: 'mailto:you@example.com', external: false },
+  { label: 'GitHub', href: 'https://github.com/your-handle', external: true },
+];
+
+/*
+  以下兩個 arbitrary value 源自 DESIGN.md 既有規範，僅缺 Tailwind token 對應（見 homepage.md 附錄）：
+  - max-w-[720px]：DESIGN.md Layout「prose ~720px」；待 @theme 補 --width-prose 後改語意化 class。
+  - px-[20px]   ：DESIGN.md button-* token padding: 20px；待 @theme 補 --spacing-button-x 後改用。
+  除此之外，全頁顏色/間距/字級/圓角一律走 @theme token class。
+*/
 ---
 
 <BaseLayout title="Your Name — Portfolio">
-  <h1 class="text-headline-display text-on-surface dark:text-on-surface-dark">Your Name</h1>
-  <p
-    class="mt-lg max-w-[720px] text-body-lg text-on-surface-muted dark:text-on-surface-dark-muted"
-  >
-    一句話自我介紹 placeholder。首頁正式內容之後用 <code class="font-mono">/design-to-build</code> 產出。
-  </p>
+  {/* ── 區塊 1：Hero（全頁唯一 h1；無頂 margin，<main> py 已給） ── */}
+  <section aria-labelledby="hero-title">
+    <div class="max-w-[720px]">
+      <h1
+        id="hero-title"
+        class="text-headline-display text-on-surface dark:text-on-surface-dark"
+      >
+        Your Name
+      </h1>
+      <p
+        class="mt-md text-body-lg text-on-surface-muted dark:text-on-surface-dark-muted"
+      >
+        一句話自我介紹 placeholder——你做什麼、擅長什麼，定位清楚的標語。
+      </p>
+    </div>
+    <div class="mt-xl flex flex-wrap items-center gap-md">
+      <a
+        href="/projects"
+        class="inline-flex h-[44px] items-center justify-center rounded-md bg-primary px-[20px] text-label-md text-on-primary no-underline transition-colors hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary dark:focus-visible:outline-primary-bright"
+      >
+        View projects
+      </a>
+      <a
+        href="#contact"
+        class="inline-flex h-[44px] items-center justify-center rounded-md border border-border bg-surface px-[20px] text-label-md text-on-surface no-underline transition-colors hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary dark:border-border-dark dark:bg-surface-dark dark:text-on-surface-dark dark:hover:bg-surface-dark-subtle dark:focus-visible:outline-primary-bright"
+      >
+        Get in touch
+      </a>
+    </div>
+  </section>
+
+  {/* ── 區塊 2：精選 Projects（無 featured 則整段不渲染，避免空標題） ── */}
+  {
+    featured.length > 0 && (
+      <section aria-labelledby="work-title" class="mt-3xl md:mt-4xl">
+        <div class="flex flex-wrap items-baseline justify-between gap-md">
+          <h2
+            id="work-title"
+            class="text-headline-lg text-on-surface dark:text-on-surface-dark"
+          >
+            Selected work
+          </h2>
+          <a
+            href="/projects"
+            class="inline-flex min-h-[44px] items-center text-label-md text-primary no-underline hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary dark:text-primary-bright dark:focus-visible:outline-primary-bright"
+          >
+            View all →
+          </a>
+        </div>
+        <ul class="mt-2xl grid grid-cols-1 gap-lg sm:grid-cols-2 lg:grid-cols-3">
+          {featured.map((p) => (
+            <li>
+              <ProjectCard
+                title={p.data.title}
+                description={p.data.description}
+                tech={p.data.tech}
+                links={p.data.links}
+                cover={p.data.cover}
+              />
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {/* ── 區塊 3：簡短 About（引言 + 一條 link 到 /about） ── */}
+  <section aria-labelledby="about-title" class="mt-3xl md:mt-4xl">
+    <h2
+      id="about-title"
+      class="text-headline-lg text-on-surface dark:text-on-surface-dark"
+    >
+      About
+    </h2>
+    <div class="mt-xl max-w-[720px]">
+      <p class="text-body-lg text-on-surface-muted dark:text-on-surface-dark-muted">
+        兩三句自我介紹 placeholder——背景、做過什麼、現在專注的方向。克制留白，完整經歷留給 About 頁。
+      </p>
+      <a
+        href="/about"
+        class="mt-lg inline-flex min-h-[44px] items-center text-label-md text-primary no-underline hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary dark:text-primary-bright dark:focus-visible:outline-primary-bright"
+      >
+        More about me →
+      </a>
+    </div>
+  </section>
+
+  {/* ── 區塊 4：聯絡（#contact 為 Hero 次 CTA 錨點目標） ── */}
+  <section aria-labelledby="contact-title" class="mt-3xl md:mt-4xl" id="contact">
+    <h2
+      id="contact-title"
+      class="text-headline-lg text-on-surface dark:text-on-surface-dark"
+    >
+      Get in touch
+    </h2>
+    <nav aria-label="Contact">
+      <ul class="mt-xl flex flex-wrap gap-md">
+        {
+          contactLinks.map((l) => (
+            <li>
+              <a
+                href={l.href}
+                rel={l.external ? 'me noopener' : undefined}
+                class="inline-flex min-h-[44px] items-center text-label-md text-primary no-underline hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary dark:text-primary-bright dark:focus-visible:outline-primary-bright"
+              >
+                {l.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </section>
 </BaseLayout>
