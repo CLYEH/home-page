@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "create-design-md": {
+      "source": "CLYEH/create-design-md",
+      "sourceType": "github",
+      "skillPath": "skills/create-design-md/SKILL.md",
+      "computedHash": "a862718879cbfc6a9180f75bafedf82bf754cb64b99338886d93ecd97311ebd6"
+    }
+  }
+}

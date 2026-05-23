@@ -1,0 +1,42 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+const { title, description = '個人 portfolio。' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <!-- no-flash 主題初始化：在繪製前決定 light/dark -->
+    <script is:inline>
+      const stored = localStorage.getItem('theme');
+      const dark = stored
+        ? stored === 'dark'
+        : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.classList.toggle('dark', dark);
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-surface font-sans text-on-surface antialiased dark:bg-surface-dark dark:text-on-surface-dark"
+  >
+    <Nav />
+    <main class="mx-auto w-full max-w-[1120px] px-lg py-2xl md:px-2xl">
+      <slot />
+    </main>
+    <footer
+      class="mx-auto w-full max-w-[1120px] px-lg py-xl text-body-sm text-on-surface-muted md:px-2xl dark:text-on-surface-dark-muted"
+    >
+      © {new Date().getFullYear()} Your Name
+    </footer>
+  </body>
+</html>

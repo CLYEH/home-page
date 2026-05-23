@@ -1,0 +1,37 @@
+---
+import ThemeToggle from './islands/ThemeToggle.tsx';
+
+const links = [
+  { href: '/', label: 'Home' },
+  { href: '/projects', label: 'Projects' },
+  { href: '/about', label: 'About' },
+];
+const path = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === '/' ? path === '/' : path.startsWith(href);
+---
+
+<header class="border-b border-border dark:border-border-dark">
+  <nav class="mx-auto flex max-w-[1120px] items-center justify-between px-lg py-md md:px-2xl">
+    <a href="/" class="text-headline-sm text-on-surface dark:text-on-surface-dark">Your Name</a>
+    <div class="flex items-center gap-lg">
+      {
+        links.map((l) => (
+          <a
+            href={l.href}
+            aria-current={isActive(l.href) ? 'page' : undefined}
+            class:list={[
+              'text-label-md hover:text-primary dark:hover:text-primary-bright',
+              isActive(l.href)
+                ? 'text-primary dark:text-primary-bright'
+                : 'text-on-surface dark:text-on-surface-dark',
+            ]}
+          >
+            {l.label}
+          </a>
+        ))
+      }
+      <ThemeToggle client:idle />
+    </div>
+  </nav>
+</header>
