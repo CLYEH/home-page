@@ -19,7 +19,7 @@ export default function ThemeToggle() {
     <button
       type="button"
       onClick={toggle}
-      aria-label="切換深淺色主題"
+      aria-label={dark ? 'Light：切換為淺色主題' : 'Dark：切換為深色主題'}
       aria-pressed={dark}
       className="rounded-md border border-border px-md py-sm text-label-md text-on-surface hover:border-primary dark:border-border-dark dark:text-on-surface-dark dark:hover:border-primary-bright"
     >

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
 import { getCollection } from 'astro:content';
 
 const projects = (await getCollection('projects')).sort(
@@ -13,13 +14,15 @@ const projects = (await getCollection('projects')).sort(
   <ul class="mt-2xl grid grid-cols-1 gap-lg sm:grid-cols-2 lg:grid-cols-3">
     {
       projects.map((p) => (
-        <li class="rounded-lg border border-border bg-surface p-lg transition-colors hover:border-primary dark:border-border-dark dark:bg-surface-dark-subtle dark:hover:border-primary-bright">
-          <h2 class="text-headline-sm text-on-surface dark:text-on-surface-dark">
-            {p.data.title}
-          </h2>
-          <p class="mt-sm text-body-md text-on-surface-muted dark:text-on-surface-dark-muted">
-            {p.data.description}
-          </p>
+        <li>
+          <ProjectCard
+            title={p.data.title}
+            description={p.data.description}
+            tech={p.data.tech}
+            links={p.data.links}
+            cover={p.data.cover}
+            headingLevel={2}
+          />
         </li>
       ))
     }

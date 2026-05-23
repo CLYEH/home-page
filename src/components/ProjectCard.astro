@@ -1,0 +1,84 @@
+---
+/**
+ * ProjectCard — 純 Astro，零 client JS（非 island）。
+ * 規格：docs/specs/project-card.md。設計來源：DESIGN.md → @theme（src/styles/global.css）。
+ * 只用語意化 token class，不寫死色票/間距。
+ */
+interface Props {
+  title: string;
+  description: string;
+  tech?: string[];
+  links?: { label: string; href: string }[];
+  cover?: string;
+  /** 卡片標題的 heading 階層；依放置頁面的標題結構傳入（/projects 在 h1 下用 2，首頁精選區在 h2 下用預設 3）。 */
+  headingLevel?: 2 | 3 | 4;
+}
+
+const { title, description, tech = [], links = [], cover, headingLevel = 3 } = Astro.props;
+
+// 整卡可點（規格 1.6）：標題為唯一主連結，指向 links 第一筆（專案主要目的地）。
+// 無 links 時標題退化為純文字 heading（不偽造目的地、不渲染 stretched-link）。
+const primaryHref = links[0]?.href;
+// 動態 heading tag：維持頁面標題階層連續（a11y heading-order）。
+const Heading = `h${headingLevel}` as const;
+---
+
+<article
+  class="relative flex h-full flex-col gap-md rounded-lg border border-border bg-surface p-lg transition-colors hover:border-primary dark:border-border-dark dark:bg-surface-dark-subtle dark:hover:border-primary-bright"
+>
+  {
+    cover && (
+      <figure class="overflow-hidden rounded-md border border-border dark:border-border-dark">
+        {/* aspect-[16/9]：規格附錄提案 aspect-cover token，採納前暫用 arbitrary value，待 token 化 */}
+        <img src={cover} alt="" class="aspect-[16/9] w-full object-cover" loading="lazy" decoding="async" />
+      </figure>
+    )
+  }
+
+  <Heading class="text-headline-sm text-on-surface dark:text-on-surface-dark">
+    {
+      primaryHref ? (
+        <a
+          href={primaryHref}
+          class="text-on-surface no-underline after:absolute after:inset-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary dark:text-on-surface-dark dark:focus-visible:outline-primary-bright"
+        >
+          {title}
+        </a>
+      ) : (
+        title
+      )
+    }
+  </Heading>
+
+  <p class="text-body-md text-on-surface-muted line-clamp-3 dark:text-on-surface-dark-muted">
+    {description}
+  </p>
+
+  {
+    tech.length > 0 && (
+      <ul class="relative z-[1] flex flex-wrap gap-sm">
+        {tech.map((t) => (
+          <li class="flex h-[28px] items-center rounded-full bg-primary-subtle px-md text-label-sm text-primary dark:border dark:border-border-dark dark:bg-transparent dark:text-primary-bright">
+            {t}
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
+  {
+    links.length > 0 && (
+      <div class="relative z-[1] mt-auto flex flex-wrap gap-md">
+        {links.map((l) => (
+          <a
+            href={l.href}
+            aria-label={`${l.label} ${title}`}
+            class="inline-flex min-h-[44px] items-center text-label-md text-primary no-underline hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary dark:text-primary-bright dark:focus-visible:outline-primary-bright"
+          >
+            {l.label}
+          </a>
+        ))}
+      </div>
+    )
+  }
+</article>
